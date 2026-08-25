@@ -1,0 +1,38 @@
+event: start
+data: {"message": "Starting research", "prompt": "{{QUERY}}", "timestamp": 1755800000000}
+
+event: planning:start
+data: {"message": "Planning research", "timestamp": 1755800001000}
+
+event: planning:end
+data: {"message": "Plan ready", "researchQuestions": ["What is the current state of solid-state battery commercialisation?", "How does cost compare to lithium-ion?"], "timestamp": 1755800004000}
+
+event: searching:start
+data: {"message": "Searching the web", "iteration": 1, "timestamp": 1755800005000}
+
+event: searching:end
+data: {"message": "Found 12 results", "iteration": 1, "resultCount": 12, "timestamp": 1755800009000}
+
+: keepalive
+
+event: analyzing:start
+data: {"message": "Analyzing 6 pages", "iteration": 1, "pageCount": 6, "timestamp": 1755800010000}
+
+event: analyzing:end
+data: {"message": "Analyzed 6 pages", "iteration": 1, "analyzed": 6, "failed": 0, "samples": [{"domain": "reuters.com", "title": "Toyota pilots solid-state line", "url": "https://www.reuters.com/business/autos/toyota-solid-state", "urlSource": "search-result", "relevance": "high", "reliability": "high", "timestamp": 1755800014000}], "timestamp": 1755800014000}
+
+event: evaluating:start
+data: {"message": "Evaluating coverage", "iteration": 1, "timestamp": 1755800015000}
+
+event: evaluating:end
+data: {"message": "Coverage: Moderate", "iteration": 1, "timestamp": 1755800017000}
+
+event: writing:start
+data: {"message": "Writing report", "timestamp": 1755800018000}
+
+event: writing:end
+data: {"message": "Report written", "timestamp": 1755800026000}
+
+event: complete
+data: {"message": "Research complete", "timestamp": 1755800027000, "report": "## Direct answer\n\nSolid-state batteries reached limited commercial production in 2025, but cost per kWh remains roughly 3x conventional lithium-ion.\n\n## Key findings\n\n- Toyota and Idemitsu committed to a pilot line targeting 2027 volume production [1].\n- QuantumScape shipped B-sample cells to automotive partners, with cycle life above 1,000 cycles at 80% retention [2].\n- Sulfide electrolytes remain the leading chemistry, though moisture sensitivity complicates manufacturing [1][3].\n\n## Open questions\n\nCost curves past 2028 depend on electrolyte supply chains that are not yet public.\n", "metadata": {"mode": "fast", "prompt": "{{QUERY}}", "queryComplexity": "moderate", "researchObjective": "Assess solid-state battery commercialisation status and cost.", "researchPlan": "Survey manufacturer announcements, then compare cost estimates.", "researchQuestions": ["What is the current state of solid-state battery commercialisation?", "How does cost compare to lithium-ion?", "Which electrolyte chemistry is winning?"], "executedQueries": [["solid state battery production 2025", "solid state battery cost per kWh"]], "totalPagesAnalyzed": 6, "citedPages": [{"id": "1", "url": "https://www.reuters.com/business/autos/toyota-solid-state", "title": "Toyota pilots solid-state battery line", "claims": ["Toyota and Idemitsu target 2027 volume production of solid-state cells.", "The pilot line uses sulfide electrolytes."], "sourceQueries": ["solid state battery production 2025"], "summary": "Reuters reports Toyota's pilot line and 2027 target.", "relevance": "high", "reliability": "high", "urlSource": "search-result"}, {"id": "2", "url": "https://ir.quantumscape.com/news/b-sample-shipments", "title": "QuantumScape ships B-sample cells", "claims": ["QuantumScape B-sample cells exceed 1,000 cycles at 80% capacity retention."], "sourceQueries": ["solid state battery cycle life"], "summary": "Investor release covering B-sample cell performance.", "relevance": "high", "reliability": "medium", "urlSource": "search-result"}, {"id": "3", "url": "https://www.nature.com/articles/s41560-025-01700-4", "title": "Manufacturing constraints of sulfide electrolytes", "claims": ["Sulfide electrolytes degrade on exposure to ambient moisture, requiring dry-room assembly."], "sourceQueries": ["sulfide electrolyte manufacturing"], "summary": "Peer-reviewed review of sulfide electrolyte processing.", "relevance": "medium", "reliability": "high", "urlSource": "extracted-link"}], "gapEvaluations": [{"gapDescription": "Cost trajectory beyond 2028 and electrolyte supply chain remain unquantified.", "researchCoverage": "Moderate", "shouldContinueResearch": true, "questionAssessments": [{"question": "What is the current state of solid-state battery commercialisation?", "status": "answered", "findings": "Pilot lines running, volume production targeted for 2027."}, {"question": "How does cost compare to lithium-ion?", "status": "partial", "findings": "Roughly 3x today, no forward curve found."}, {"question": "Which electrolyte chemistry is winning?", "status": "partial", "findings": "Sulfide leads, oxide alternatives not assessed."}], "searchQueries": ["solid state battery cost per kWh forecast 2030", "lithium sulfide supply chain capacity"], "newResearchQuestions": ["Who supplies battery-grade lithium sulfide at scale?"]}], "outline": {"directAnswer": "Solid-state cells are in pilot production but still around 3x the cost of lithium-ion.", "keyTakeaways": ["2027 is the earliest credible volume-production date.", "Sulfide electrolytes lead but need dry-room manufacturing."], "outline": "Direct answer, key findings, open questions", "relevantSourceIds": ["1", "2", "3"]}, "urlSources": {"searchResults": 5, "extractedLinks": 1, "userProvided": 0}, "metrics": {"iterations": 1, "fetches": 6, "cachedFetches": 0, "searches": {"parallel": 2}, "cachedSearches": {"parallel": 0}, "robotsBlocked": 0, "successRates": {"analyzes": 1.0, "fetches": 1.0, "searches": 1.0}, "tokens": {"gemini-2.5-flash": {"input": 41000, "output": 3800}}, "phases": {"planning": {"duration": 3000}, "writing": {"duration": 8000}}, "totalDuration": 27000}}}
+

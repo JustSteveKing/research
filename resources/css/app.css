@@ -1,0 +1,301 @@
+@import 'tailwindcss';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@theme {
+    --font-sans:
+        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+    /* Paper on steel: a quiet instrument panel, so the two signal colours carry meaning. */
+    --color-ground: #f4f5f2;
+    --color-panel: #ffffff;
+    --color-ink: #16191c;
+    --color-muted: #6a7278;
+    --color-rule: #dcdfda;
+    --color-signal: #b45309;
+    --color-knowledge: #0f766e;
+
+    /* Workspace chrome */
+    --rail-w: 240px;
+    --rail-collapsed-w: 56px;
+    --inspector-w: 340px;
+    --titlebar-h: 38px;
+    --statusbar-h: 26px;
+
+    /* Desktop-fast motion */
+    --duration-instant: 90ms;
+    --duration-fast: 140ms;
+}
+
+@layer theme {
+    /* Desktop apps follow the OS. The class is kept as a manual override. */
+    .dark {
+        --color-ground: #101312;
+        --color-panel: #171b1a;
+        --color-ink: #e8eae6;
+        --color-muted: #8d9691;
+        --color-rule: #272c2a;
+        --color-signal: #f0a34a;
+        --color-knowledge: #4fd1c5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root:not(.light) {
+            --color-ground: #101312;
+            --color-panel: #171b1a;
+            --color-ink: #e8eae6;
+            --color-muted: #8d9691;
+            --color-rule: #272c2a;
+            --color-signal: #f0a34a;
+            --color-knowledge: #4fd1c5;
+        }
+    }
+}
+
+@layer base {
+    html {
+        color-scheme: light dark;
+    }
+
+    body {
+        background-color: var(--color-ground);
+        color: var(--color-ink);
+    }
+
+    ::selection {
+        background-color: color-mix(
+            in oklab,
+            var(--color-signal) 25%,
+            transparent
+        );
+    }
+}
+
+@layer components {
+    /* Numbers line up in columns; they are data, not prose. */
+    .tnum {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Reading surface: generous rhythm, restrained ornament. */
+    .prose-research {
+        font-size: 0.875rem;
+        line-height: 1.7;
+    }
+
+    .prose-research > * + * {
+        margin-top: 0.9em;
+    }
+
+    .prose-research h2 {
+        margin-top: 1.9em;
+        font-size: 0.8125rem;
+        font-family: var(--font-mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+    }
+
+    .prose-research h3 {
+        margin-top: 1.5em;
+        font-weight: 500;
+    }
+
+    .prose-research ul,
+    .prose-research ol {
+        margin-left: 1.1em;
+    }
+
+    .prose-research li + li {
+        margin-top: 0.35em;
+    }
+
+    .prose-research li {
+        list-style: disc;
+    }
+
+    .prose-research ol li {
+        list-style: decimal;
+    }
+
+    .prose-research li::marker {
+        color: var(--color-rule);
+    }
+
+    .prose-research a {
+        color: var(--color-knowledge);
+        text-decoration: underline;
+        text-decoration-color: color-mix(
+            in oklab,
+            var(--color-knowledge) 35%,
+            transparent
+        );
+        text-underline-offset: 3px;
+    }
+
+    .prose-research a:hover {
+        text-decoration-color: currentColor;
+    }
+
+    .prose-research code {
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+        background-color: var(--color-ground);
+        border: 1px solid var(--color-rule);
+        border-radius: 3px;
+        padding: 0.05em 0.3em;
+    }
+
+    .prose-research blockquote {
+        border-left: 2px solid var(--color-rule);
+        padding-left: 0.9em;
+        color: var(--color-muted);
+    }
+
+    .prose-research table {
+        width: 100%;
+        text-align: left;
+        font-size: 0.8125rem;
+    }
+
+    .prose-research th {
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+        padding-block: 0.35em;
+    }
+
+    .prose-research td {
+        border-top: 1px solid var(--color-rule);
+        padding-block: 0.4em;
+    }
+
+    /* Panes scroll, chrome never does. */
+    .pane {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+        transition: scrollbar-color var(--duration-fast);
+    }
+
+    /* Scrollbars appear on approach, like a native list. */
+    .pane:hover,
+    .pane:focus-within {
+        scrollbar-color: var(--color-rule) transparent;
+    }
+
+    /* Section headers stay put while their content scrolls past. */
+    .sticky-head {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: color-mix(
+            in oklab,
+            var(--color-panel) 92%,
+            transparent
+        );
+        backdrop-filter: blur(6px);
+    }
+
+    .drag-region {
+        -webkit-app-region: drag;
+    }
+
+    .no-drag {
+        -webkit-app-region: no-drag;
+    }
+}
+
+@layer utilities {
+    /* Machine data: phases, counts, timestamps, domains. */
+    .label {
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+    }
+
+    /* Loading that reads as work in progress rather than a heartbeat. */
+    .shimmer {
+        background: linear-gradient(
+            90deg,
+            var(--color-rule) 0%,
+            color-mix(in oklab, var(--color-rule) 45%, transparent) 40%,
+            var(--color-rule) 80%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.6s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: 120% 0;
+        }
+        100% {
+            background-position: -40% 0;
+        }
+    }
+
+    /* Toasts arrive, hold, and leave without a timer in React state. */
+    .toast {
+        animation:
+            toast-in var(--duration-fast) cubic-bezier(0, 0, 0.2, 1),
+            toast-out var(--duration-fast) ease-in 4.5s forwards;
+    }
+
+    @keyframes toast-in {
+        from {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+    }
+
+    @keyframes toast-out {
+        to {
+            opacity: 0;
+            transform: translateY(4px);
+            visibility: hidden;
+        }
+    }
+
+    .rise-in {
+        animation: rise-in var(--duration-fast) cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    @keyframes rise-in {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    /* One focus treatment everywhere, legible on a dense grey field. */
+    .focus-ring:focus-visible {
+        outline: none;
+        box-shadow:
+            0 0 0 2px var(--color-ground),
+            0 0 0 4px var(--color-ink);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -1,0 +1,143 @@
+name: build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  draft-release:
+    # electron-builder uploads into an existing draft when one matches the tag.
+    # Creating it up front keeps the matrix jobs from racing to create it.
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 \
+            || gh release create "$TAG" --draft --generate-notes --title "$TAG"
+
+  build:
+    needs: draft-release
+    # workflow_dispatch skips draft-release, so the matrix must still start.
+    if: always() && needs.draft-release.result != 'failure'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: mac
+            arch: arm64
+          - os: ubuntu-latest
+            target: linux
+            arch: x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          # nativephp/php-bin ships 8.3, 8.4 and 8.5 binaries; the build picks
+          # the one matching the PHP that runs native:build.
+          php-version: '8.5'
+          extensions: zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+
+      - name: Install Linux packaging dependencies
+        if: matrix.target == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fakeroot libarchive-tools
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Create environment file
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+
+      - name: Publish Electron project
+        # composer install does not fire post-update-cmd, and the committed
+        # scaffold omits electron-plugin/dist (gitignored upstream), which
+        # electron-vite needs to resolve the `#plugin` import.
+        run: php artisan native:install --force --publish --no-interaction
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Configure build environment
+        env:
+          # Tags are v-prefixed; the app version is not.
+          VERSION: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || '0.0.0-dev' }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "APP_ENV=production"
+            echo "APP_DEBUG=false"
+            echo "NATIVEPHP_APP_VERSION=${VERSION#v}"
+            echo "NATIVEPHP_UPDATER_ENABLED=true"
+            echo "NATIVEPHP_UPDATER_PROVIDER=github"
+            echo "GITHUB_OWNER=${OWNER}"
+            echo "GITHUB_REPO=${REPO}"
+            echo "GITHUB_TOKEN=${RELEASE_TOKEN}"
+          } >> .env
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Build desktop app
+        env:
+          # Unsigned builds: stop electron-builder from picking up a keychain
+          # identity that is not there and failing the mac build.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: |
+          php artisan native:build ${{ matrix.target }} ${{ matrix.arch }} \
+            ${{ startsWith(github.ref, 'refs/tags/v') && '--publish' || '' }} \
+            --no-interaction
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ matrix.target }}-${{ matrix.arch }}
+          path: |
+            nativephp/electron/dist/*.dmg
+            nativephp/electron/dist/*.zip
+            nativephp/electron/dist/*.AppImage
+            nativephp/electron/dist/*.deb
+            nativephp/electron/dist/latest*.yml
+          if-no-files-found: error
+          retention-days: 14
