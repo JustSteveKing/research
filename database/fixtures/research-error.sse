@@ -1,0 +1,6 @@
+event: start
+data: {"message": "Starting research", "timestamp": 1755800000000}
+
+event: error
+data: {"message": "Upstream search provider unavailable", "code": "provider_error", "timestamp": 1755800003000}
+

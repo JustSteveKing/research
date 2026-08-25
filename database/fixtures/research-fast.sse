@@ -1,0 +1,21 @@
+event: start
+data: {"message": "Starting research", "prompt": "{{QUERY}}", "timestamp": 1755800000000}
+
+event: planning:start
+data: {"message": "Planning research", "timestamp": 1755800001000}
+
+event: searching:start
+data: {"message": "Searching the web", "iteration": 1, "timestamp": 1755800002000}
+
+event: searching:end
+data: {"message": "Found 18 results", "iteration": 1, "timestamp": 1755800006000}
+
+event: writing:start
+data: {"message": "Writing report", "timestamp": 1755800007000}
+
+event: writing:end
+data: {"message": "Report written", "timestamp": 1755800012000}
+
+event: complete
+data: {"message": "Research complete", "timestamp": 1755800013000, "report": "Laravel API development in 2026 centres on API resources, Sanctum for token auth, and versioned route groups.\n\n- API resources transform Eloquent models into JSON without leaking columns [1].\n- Sanctum is the default for first-party SPA and mobile tokens; Passport remains for full OAuth2 [2].\n- Versioning by URI prefix (/api/v1) is the most common convention in community guides [3].\n", "metadata": {"mode": "fast", "prompt": "{{QUERY}}", "queryComplexity": "moderate", "researchObjective": "Survey current Laravel API practice.", "researchPlan": "Search community guides and official docs.", "researchQuestions": [], "executedQueries": [["laravel api best practices 2026", "laravel sanctum vs passport"]], "totalPagesAnalyzed": 5, "citedPages": [{"id": "7JFBWd", "url": "https://laravel.com/docs/eloquent-resources", "title": "API resources", "claims": [], "sourceQueries": ["laravel api resources"]}, {"id": "K2mQx1", "url": "https://laravel.com/docs/sanctum", "title": "Laravel Sanctum", "claims": [], "sourceQueries": ["laravel sanctum vs passport"]}, {"id": "Pz09aa", "url": "https://example.dev/laravel-api-versioning", "title": "Versioning Laravel APIs", "claims": [], "sourceQueries": ["laravel api versioning"]}]}}
+
