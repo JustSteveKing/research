@@ -69,7 +69,7 @@ export default function CoverageMap({
                                 <span className="label tnum ml-auto shrink-0">
                                     {topic.status === 'open'
                                         ? 'nothing yet'
-                                        : `${topic.facts_count} facts`}
+                                        : `${topic.facts_count} ${topic.facts_count === 1 ? 'fact' : 'facts'}`}
                                 </span>
                             </p>
 

@@ -7,6 +7,12 @@ sources attached, the contradictions surfaced, and the gaps named.
 Built with Laravel, Inertia + React and [NativePHP](https://nativephp.com), and
 shipped as a desktop app. Your research lives in a SQLite file on your machine.
 
+![A research thread: the coverage map and brief in the reading pane, sources and
+follow-up questions in the inspector](.github/screenshot.png)
+
+<sub>Seeded demo data — `php artisan db:seed --class=DemoSeeder`. Every claim and
+source in it is invented.</sub>
+
 ## What it does
 
 - **Threads.** A thread is a question you keep. It holds every run, every fact,
